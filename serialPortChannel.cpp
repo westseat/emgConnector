@@ -15,7 +15,7 @@
 
 int uart_open(const char* pathname)
 {
-	int fd = open(pathname, O_RDWR | O_NOCTTY | O_NONBLOCK);
+	int fd = open(pathname, O_RDWR | O_NOCTTY);
 	if (fd == -1) {
 		perror("Open UART failed");
 		return -1;
@@ -125,12 +125,11 @@ int serialPortChannel::open(std::string& pathname) {
 }
 
 int serialPortChannel::close() {
-//	if (mThread.joinable()) {
-//		mQuit.store(true);
-//		mThread.join();
-//	}
-//	return uart_close(mFd);
-return 0;
+	if (mThread.joinable()) {
+		mQuit.store(true);
+		mThread.join();
+	}
+	return uart_close(mFd);
 }
 
 bool serialPortChannel::registerListener(std::shared_ptr<HardwareChannelListener> listener) {
@@ -146,55 +145,33 @@ bool serialPortChannel::removeListener(std::shared_ptr<HardwareChannelListener> 
 
 
 void serialPortChannel::readData() {
-//	unsigned char rvalue[50];
-//
-//	while (true) {
-//		ssize_t re = safe_read(mFd, rvalue, 50);
-//		for (unsigned int i = 0; i < re; ++i) {
-//			std::cout << std::hex << (unsigned int)rvalue[i] << " ";
-//			if (i % 10 == 0) {
-//				std::cout << std::endl;
-//			}
-//		}
-//		std::cout << std::endl;
-//		std::this_thread::sleep_for(std::chrono::seconds(1));
-//	}
+
 	std::array<unsigned char, 50> readValue;
 	unsigned char rvalue[50];
 	while (true) {
-		//std::cout <<"invoke readData function" << std::endl;
 		if (mQuit.load()) {
-			//std::cout << "invoke return function !!!!!!!" << std::endl;
 			return;
 		}
-		//std::cout <<"start to invoke saft_read function" << std::endl;
-		//ssize_t readLen = safe_read(mFd, readValue.data(), readValue.size());
 		ssize_t re = safe_read(mFd, rvalue, 50);
-		for (unsigned int i = 0; i < re; ++i) {
-			std::cout << std::hex << (unsigned int)rvalue[i] << " ";
-			if (i % 10 == 0) {
-				std::cout << std::endl;
-			}
+	//	for (unsigned int i = 0; i < re; ++i) {
+	//		std::cout << std::hex << (unsigned int)rvalue[i] << " ";
+	//		if (i % 10 == 0) {
+	//			std::cout << std::endl;
+	//		}
+	//	}
+		if (re == 0) {
+			continue;
 		}
-		//std::cout <<"after invoke safe_read function" << std::endl;
-	//	if (re == 0) {
-	//		continue;
-	//	}
-		//std::cout <<"length: " << re << "   " << mFd << std::endl;
-		
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		//std::cout << "1 function" << std::endl;
-		//auto data = std::make_shared<HardwareChannelData>();
-		//data->type = HardwareInface::EMG_UART;
-		//auto rawdata = std::make_shared<std::vector<unsigned char>>(50);
-		//std::cout <<"2 functin " << std::endl;
-	//	for (unsigned i = 0; i < readLen; ++i) {
-	//		rawdata->push_back(readValue[i]);
-	//	}
-	//	for (auto it = mListenSet.begin(); it != mListenSet.end(); ++it) {
-	//		//(*it)->onData(data);
-	//	}
-		//std::cout <<"afater invoke ondata" << std::endl;
+		auto data = std::make_shared<HardwareChannelData>();
+		data->type = HardwareInface::EMG_UART;
+		auto emgData = std::make_shared<std::vector<unsigned char>>();
+		for (unsigned i = 0; i < re; ++i) {
+			emgData->push_back(rvalue[i]);
+		}
+		data->rawData = emgData;
+		for (auto it = mListenSet.begin(); it != mListenSet.end(); ++it) {
+			(*it)->onData(data);
+		}
 	}
 }
 

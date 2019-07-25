@@ -26,19 +26,20 @@ public:
 
 	void onData(std::shared_ptr<HardwareChannelData> dataPtr) override
 	{
-		std::cout <<"onData called" << std::endl;
-	//	auto emgData = dataPtr->rawData;
-	//	for (unsigned int i = 0; i < (*emgData).size(); ++i) {
-	//		std::cout << std::hex << (*emgData)[i] << " ";
-	//		if (i % 10 == 0) {
-	//			std::cout << std::endl;
-	//		}
-	//	}
+		auto emgData = dataPtr->rawData;
+		//std::cout <<"onData called  " << (*emgData).size() << std::endl;
+		for (unsigned int i = 0; i < (*emgData).size(); ++i) {
+			std::cout << std::hex << (*emgData)[i] << " ";
+			if (i % 10 == 0) {
+				std::cout << std::endl;
+			}
+		}
 	}
 
 	~emgListener() override {
 
 	}
+	int i = 0;
 };
 
 static int fd = 0;
@@ -114,21 +115,17 @@ ssize_t safe_reads(int fd, void *vptr, size_t count)
 	return (count - nleft);
 }
 
-void print()
-{
-
-}
 int main()
 {
-//	serialPortChannel serial;
-//	auto listen = std::make_shared<emgListener>();
-//	serial.registerListener(listen);
-//	std::string path("/dev/ttyUSB0");
-//	serial.open(path);
-//	serial.run();
-//	while (true) {
-//		std::this_thread::sleep_for(std::chrono::seconds(5));
-//	}
+	serialPortChannel serial;
+	auto listen = std::make_shared<emgListener>();
+	serial.registerListener(listen);
+	std::string path("/dev/ttyUSB0");
+	serial.open(path);
+	serial.run();
+	while (true) {
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+	}
 
 	std::cout <<"Start to open ttyUSB0" << std::endl;
 	fd = uart_opens(fd, "/dev/ttyUSB0");
@@ -154,6 +151,5 @@ int main()
 		}
 		//std::cout << std::endl;
 	}
-    printf("hello from ConsoleApplication6!\n");
     return 0;
 }
