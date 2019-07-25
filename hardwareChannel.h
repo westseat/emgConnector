@@ -31,7 +31,3 @@ public:
 	virtual bool removeListener(std::shared_ptr<HardwareChannelListener> listener) = 0;
 	virtual ~HardwareChannel() {};
 };
-
-
-
-

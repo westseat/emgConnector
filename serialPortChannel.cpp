@@ -93,18 +93,7 @@ serialPortChannel::~serialPortChannel() {
 }
 
 int serialPortChannel::open(std::string& pathname) {
-//	int	fd = uart_open("/dev/ttyUSB0");
-//	std::cout <<"port " << fd << std::endl;
-//	std::this_thread::sleep_for(std::chrono::seconds(5));
-//	if (fd) {
-//		std::cout << "open uart success" << std::endl;
-//	}
-//	std::this_thread::sleep_for(std::chrono::seconds(5));
-//	int ret = uart_set(fd, 0, 0, 0, 0, 0);
-//	if (ret == 0) {
-//		std::cout << "set parameters success" << std::endl;
-//	}
-//	std::this_thread::sleep_for(std::chrono::seconds(5));
+
 	mFd = uart_open(pathname.c_str());
 	std::cout <<"port " << mFd << std::endl;
 	if(mFd <= 0) {
@@ -115,12 +104,6 @@ int serialPortChannel::open(std::string& pathname) {
 	if (ret == 0) {
 		std::cout << "set parameters success" << std::endl;
 	}
-//	if (mFd) {
-//		if( 0 == uart_set(mFd, 0, 0, 0, 0, 0)){
-//			std::cout <<"set uart parameters success" << std::endl;
-//		}
-//	}
-	//mFd = fd;
 	return mFd;
 }
 
