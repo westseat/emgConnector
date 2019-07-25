@@ -45,7 +45,7 @@ static int fd = 0;
 
 int uart_opens(int fd, const char* pathname)
 {
-	fd = open(pathname, O_RDWR | O_NOCTTY | O_NONBLOCK);
+	fd = open(pathname, O_RDWR | O_NOCTTY);
 	if (fd == -1) {
 		perror("Open UART failed");
 		return -1;
@@ -130,18 +130,18 @@ int main()
 //		std::this_thread::sleep_for(std::chrono::seconds(5));
 //	}
 
+	std::cout <<"Start to open ttyUSB0" << std::endl;
 	fd = uart_opens(fd, "/dev/ttyUSB0");
 	std::cout <<"port " << fd << std::endl;
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	if (fd) {
 		std::cout << "open uart success" << std::endl;
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(5));
 	int ret = uart_sets(fd, 0, 0, 0, 0, 0);
 	if (ret == 0) {
 		std::cout << "set parameters success" << std::endl;
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	unsigned char rvalue[50];
 
 	while (true) {
