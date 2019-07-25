@@ -24,9 +24,3 @@ private:
 	std::thread mThread;
 	std::atomic<bool> mQuit;
 };
-
-class chello {
-public:
-	void read();
-	void test();
-};
