@@ -14,7 +14,7 @@ public:
 	int close() override;
 	bool registerListener(std::shared_ptr<HardwareChannelListener> listener) override;
 	bool removeListener(std::shared_ptr<HardwareChannelListener> listener) override;
-	void run();
+	void run() override;
 	~serialPortChannel() override;
 
 private:

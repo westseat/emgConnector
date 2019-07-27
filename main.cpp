@@ -11,8 +11,8 @@
 #include <chrono>
 #include <functional>
 #include "hardwareChannel.h"
-#include "emgParser.h"
 #include "parserManager.h"
+#include "hardwareChannelManager.h"
 #include <string>
 
 class emgDataListener : public parserListener {
@@ -152,13 +152,17 @@ ssize_t safe_reads(int fd, void *vptr, size_t count)
 
 int main()
 {
-	serialPortChannel serial;
+	//serialPortChannel serial;
+	auto serialChannel = hardwareChannelManager::createHardwareChannel(HardwareInface::EMG_UART);
 	auto listen = std::make_shared<emgListener>();
 	listen->startParser();
-	serial.registerListener(listen);
+	//serial.registerListener(listen);
+	serialChannel->registerListener(listen);
 	std::string path("/dev/ttyUSB0");
-	serial.open(path);
-	serial.run();
+//	serial.open(path);
+	serialChannel->open(path);
+	//serial.run();
+	serialChannel->run();
 	while (true) {
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 	}

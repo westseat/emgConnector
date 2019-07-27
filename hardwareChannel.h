@@ -23,6 +23,7 @@ public:
 	HardwareChannel() {};
 	virtual int open(std::string& pathname) = 0;
 	virtual int close() = 0;
+	virtual void run() = 0;
 	virtual bool registerListener(std::shared_ptr<HardwareChannelListener> listener) = 0;
 	virtual bool removeListener(std::shared_ptr<HardwareChannelListener> listener) = 0;
 	virtual ~HardwareChannel() {};
