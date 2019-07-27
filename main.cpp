@@ -10,7 +10,6 @@
 #include "serialPortChannel.h"
 #include <chrono>
 #include <functional>
-#include "hardwareChannel.h"
 #include "parserManager.h"
 #include "hardwareChannelManager.h"
 #include <string>
