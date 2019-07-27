@@ -11,12 +11,42 @@
 #include <chrono>
 #include <functional>
 #include "hardwareChannel.h"
+#include "emgParser.h"
+#include <string>
+
+class emgDataListener : public parserListener {
+
+void onParserData(DataType type, void* pData)
+{
+	if( DataType::EMG_DATA != type) {
+		return;
+	}
+	emgData* pEmgData = static_cast<emgData*>(pData);
+	std::cout << pEmgData->ch1Average <<" " 
+				<< pEmgData->ch1Value <<" "
+				<< pEmgData->ch1Power <<" "
+				<< pEmgData->ch1Strength <<" "
+				<< pEmgData->ch2Average <<" "
+				<< pEmgData->ch2Value <<" "
+				<< pEmgData->ch2Power<<" "
+				<< pEmgData->ch2Strength << std::endl;
+	delete pEmgData;
+}
+
+};
 
 class emgListener : public HardwareChannelListener {
 public:
 	void onOpen() override
 	{
 		std::cout << "serial port is opened" << std::endl;
+	}
+
+	void startParser() 
+	{
+		mParser = std::make_shared<emgParser>();
+		auto listener = std::make_shared<emgDataListener>();
+		mParser->registerListener(listener);
 	}
 
 	void onClose() override
@@ -26,10 +56,11 @@ public:
 
 	void onData(std::shared_ptr<HardwareChannelData> dataPtr) override
 	{
-		auto emgData = dataPtr->rawData;
-		//std::cout <<"onData called  " << (*emgData).size() << std::endl;
-		for (unsigned int i = 0; i < (*emgData).size(); ++i) {
-			std::cout << std::hex << (*emgData)[i] << " ";
+		auto tmpEmgData = dataPtr->rawData;
+		//mParser->push(tmpEmgData);
+		std::cout <<"onData called  " << (*tmpEmgData).size() << std::endl;
+		for (unsigned int i = 0; i < (*tmpEmgData).size(); ++i) {
+			std::cout << std::hex << (*tmpEmgData)[i] << " ";
 			if (i % 10 == 0) {
 				std::cout << std::endl;
 			}
@@ -39,6 +70,8 @@ public:
 	~emgListener() override {
 
 	}
+private:
+	std::shared_ptr<parser> mParser;
 	int i = 0;
 };
 

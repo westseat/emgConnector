@@ -13,21 +13,25 @@ enum class emgDataStatus : unsigned char {
     FIFTH_FLAG,
     SIXTH_FLAG,
     SEVENTH_FLAG,
+    EIGHTTH_FLAG,
     UNDEFINED
 };
 
 class emgParser : public parser {
 public:
-    emgParser(){}
+    emgParser();
     void push(std::shared_ptr<std::vector<unsigned char>> data) override;
     bool registerListener(std::shared_ptr<parserListener> listener) override;
     bool removeListener(std::shared_ptr<parserListener> listener) override;
     std::string getParserType() override;
     ~emgParser() override;
 private:
+    unsigned int cache2Value(const std::vector<unsigned char>& cache);
+private:
     std::string mParserType;
     std::vector<unsigned char> mCache;
     emgData mEmgData;
     std::set<std::shared_ptr<parserListener>> mListener;
     emgDataStatus mFlag;
+    const std::string mParseType = "EMG_DATA";
 };

@@ -15,11 +15,13 @@
 
 int uart_open(const char* pathname)
 {
+	std::cout <<"uart_open called" << std::endl;
 	int fd = open(pathname, O_RDWR | O_NOCTTY);
 	if (fd == -1) {
 		perror("Open UART failed");
 		return -1;
 	}
+	std::cout <<"uart_open called ended" << std::endl;
 	return fd;
 }
 
