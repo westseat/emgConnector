@@ -2,11 +2,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-
-enum class HardwareInface : int {
-	EMG_UART = 0,
-	undefined = 255
-};
+#include "interface.h"
 
 struct HardwareChannelData {
 	HardwareInface type;

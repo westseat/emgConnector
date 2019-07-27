@@ -3,11 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-
-enum class parserDataType : int {
-    EMG_DATA = 1,
-    UNDEFINED = 255
-};
+#include "interface.h"
 
 class parserListener {
 public:
