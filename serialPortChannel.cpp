@@ -117,13 +117,13 @@ int serialPortChannel::close() {
 	return uart_close(mFd);
 }
 
-bool serialPortChannel::registerListener(std::shared_ptr<HardwareChannelListener> listener) {
+bool serialPortChannel::registerListener(std::shared_ptr<hardwareChannelListener> listener) {
 	auto ret = mListenSet.insert(listener);
 	std::cout << "registerListener " << mListenSet.size() << std::endl;
 	return ret.second;
 }
 
-bool serialPortChannel::removeListener(std::shared_ptr<HardwareChannelListener> listener) {
+bool serialPortChannel::removeListener(std::shared_ptr<hardwareChannelListener> listener) {
 	return mListenSet.erase(listener);
 }
 
@@ -147,7 +147,7 @@ void serialPortChannel::readData() {
 		if (re == 0) {
 			continue;
 		}
-		auto data = std::make_shared<HardwareChannelData>();
+		auto data = std::make_shared<hardwareChannelData>();
 		data->type = hardwareChannelType::EMG_UART;
 		auto emgData = std::make_shared<std::vector<unsigned char>>();
 		for (unsigned i = 0; i < re; ++i) {

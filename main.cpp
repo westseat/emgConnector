@@ -35,7 +35,7 @@ void onParserData(parserDataType type, void* pData)
 
 };
 
-class emgListener : public HardwareChannelListener {
+class emgListener : public hardwareChannelListener {
 public:
 	void onOpen() override
 	{
@@ -55,7 +55,7 @@ public:
 		std::cout << "serial port is closed" << std::endl;
 	}
 
-	void onData(std::shared_ptr<HardwareChannelData> dataPtr) override
+	void onData(std::shared_ptr<hardwareChannelData> dataPtr) override
 	{
 		auto tmpEmgData = dataPtr->rawData;
 		mParser->push(tmpEmgData);

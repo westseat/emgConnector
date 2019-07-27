@@ -5,6 +5,6 @@
 
 class hardwareChannelManager {
 public:
-    static std::shared_ptr<HardwareChannel> createHardwareChannel(hardwareChannelType type);
+    static std::shared_ptr<hardwareChannel> createHardwareChannel(hardwareChannelType type);
     ~hardwareChannelManager() = delete;
 };
