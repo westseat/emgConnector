@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-enum class DataType : int {
+enum class parserDataType : int {
     EMG_DATA = 1,
     UNDEFINED = 255
 };
@@ -12,7 +12,7 @@ enum class DataType : int {
 class parserListener {
 public:
     parserListener(){};
-    virtual void onParserData(DataType type, void* pData) = 0;
+    virtual void onParserData(parserDataType type, void* pData) = 0;
     virtual ~parserListener(){};
 };
 

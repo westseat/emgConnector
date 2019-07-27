@@ -16,9 +16,9 @@
 
 class emgDataListener : public parserListener {
 
-void onParserData(DataType type, void* pData)
+void onParserData(parserDataType type, void* pData)
 {
-	if( DataType::EMG_DATA != type) {
+	if( parserDataType::EMG_DATA != type) {
 		return;
 	}
 	emgData* pEmgData = static_cast<emgData*>(pData);

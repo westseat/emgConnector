@@ -103,7 +103,7 @@ void emgParser::push(std::shared_ptr<std::vector<unsigned char>> data)
             emgData* ptr = new emgData;
             (*ptr) = mEmgData;
             for(auto it = mListener.begin(); it != mListener.end(); ++it) {
-                (*it)->onParserData(DataType::EMG_DATA, static_cast<void*>(ptr));
+                (*it)->onParserData(parserDataType::EMG_DATA, static_cast<void*>(ptr));
             }
         }
         
