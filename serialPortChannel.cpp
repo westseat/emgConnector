@@ -148,7 +148,7 @@ void serialPortChannel::readData() {
 			continue;
 		}
 		auto data = std::make_shared<HardwareChannelData>();
-		data->type = HardwareInface::EMG_UART;
+		data->type = hardwareChannelType::EMG_UART;
 		auto emgData = std::make_shared<std::vector<unsigned char>>();
 		for (unsigned i = 0; i < re; ++i) {
 			emgData->push_back(rvalue[i]);

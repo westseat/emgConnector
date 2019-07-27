@@ -152,7 +152,7 @@ ssize_t safe_reads(int fd, void *vptr, size_t count)
 int main()
 {
 	//serialPortChannel serial;
-	auto serialChannel = hardwareChannelManager::createHardwareChannel(HardwareInface::EMG_UART);
+	auto serialChannel = hardwareChannelManager::createHardwareChannel(hardwareChannelType::EMG_UART);
 	auto listen = std::make_shared<emgListener>();
 	listen->startParser();
 	//serial.registerListener(listen);

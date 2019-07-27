@@ -1,6 +1,6 @@
 # pragma once
 
-enum class HardwareInface : int {
+enum class hardwareChannelType : int {
 	EMG_UART = 0,
 	undefined = 255
 };

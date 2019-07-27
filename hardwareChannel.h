@@ -5,7 +5,7 @@
 #include "interface.h"
 
 struct HardwareChannelData {
-	HardwareInface type;
+	hardwareChannelType type;
 	std::shared_ptr<std::vector<unsigned char>> rawData;
 };
 
