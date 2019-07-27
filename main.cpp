@@ -12,6 +12,7 @@
 #include <functional>
 #include "hardwareChannel.h"
 #include "emgParser.h"
+#include "parserManager.h"
 #include <string>
 
 class emgDataListener : public parserListener {
@@ -44,7 +45,8 @@ public:
 
 	void startParser() 
 	{
-		mParser = std::make_shared<emgParser>();
+		//mParser = std::make_shared<emgParser>();
+		mParser = parserManager::createParser(parserDataType::EMG_DATA);
 		auto listener = std::make_shared<emgDataListener>();
 		mParser->registerListener(listener);
 	}
