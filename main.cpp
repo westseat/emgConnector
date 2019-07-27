@@ -22,14 +22,14 @@ void onParserData(DataType type, void* pData)
 		return;
 	}
 	emgData* pEmgData = static_cast<emgData*>(pData);
-	std::cout << pEmgData->ch1Average <<" " 
-				<< pEmgData->ch1Value <<" "
-				<< pEmgData->ch1Power <<" "
-				<< pEmgData->ch1Strength <<" "
-				<< pEmgData->ch2Average <<" "
-				<< pEmgData->ch2Value <<" "
-				<< pEmgData->ch2Power<<" "
-				<< pEmgData->ch2Strength << std::endl;
+	std::cout   << "ch1 average:" <<  pEmgData->ch1Average <<", " 
+				<< "ch1 value:" << pEmgData->ch1Value <<", "
+				<< "ch1 power:" << pEmgData->ch1Power <<", "
+				<< "ch1 strength:" << pEmgData->ch1Strength <<", "
+				<< "ch2 average:" << pEmgData->ch2Average <<", "
+				<< "ch2 value:" << pEmgData->ch2Value <<", "
+				<< "ch2 power:" << pEmgData->ch2Power<<", "
+				<< "ch2 strength:" << pEmgData->ch2Strength << std::endl;
 	delete pEmgData;
 }
 
@@ -57,14 +57,14 @@ public:
 	void onData(std::shared_ptr<HardwareChannelData> dataPtr) override
 	{
 		auto tmpEmgData = dataPtr->rawData;
-		//mParser->push(tmpEmgData);
-		std::cout <<"onData called  " << (*tmpEmgData).size() << std::endl;
-		for (unsigned int i = 0; i < (*tmpEmgData).size(); ++i) {
-			std::cout << std::hex << (*tmpEmgData)[i] << " ";
-			if (i % 10 == 0) {
-				std::cout << std::endl;
-			}
-		}
+		mParser->push(tmpEmgData);
+	//	std::cout <<"onData called  " << (*tmpEmgData).size() << std::endl;
+	//	for (unsigned int i = 0; i < (*tmpEmgData).size(); ++i) {
+	//		std::cout << std::hex << (*tmpEmgData)[i] << " ";
+	//		if (i % 10 == 0) {
+	//			std::cout << std::endl;
+	//		}
+	//	}
 	}
 
 	~emgListener() override {
@@ -152,6 +152,7 @@ int main()
 {
 	serialPortChannel serial;
 	auto listen = std::make_shared<emgListener>();
+	listen->startParser();
 	serial.registerListener(listen);
 	std::string path("/dev/ttyUSB0");
 	serial.open(path);
