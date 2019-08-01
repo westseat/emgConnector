@@ -1,6 +1,9 @@
 # bioC_onnector
 Bioelectricity connector
 
+# Dependency
+* [uWebsocket](https://github.com/uNetworking/uWebSockets)
+
 
 # Time consumption
 
