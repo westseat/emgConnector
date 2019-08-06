@@ -7,31 +7,31 @@
 #include <termios.h>
 #include <errno.h>
 #include <iostream>
-#include "serialPortChannel.h"
+#include <string>
 #include <chrono>
 #include <functional>
+#include "serialPortChannel.h"
 #include "parserManager.h"
 #include "hardwareChannelManager.h"
-#include <string>
 
 class emgDataListener : public parserListener {
 
-void onParserData(parserDataType type, void* pData)
-{
-	if( parserDataType::EMG_DATA != type) {
-		return;
+	void onParserData(parserDataType type, void* pData)
+	{
+		if( parserDataType::EMG_DATA != type) {
+			return;
+		}
+		emgData* pEmgData = static_cast<emgData*>(pData);
+		std::cout   << "ch1 average:" <<  pEmgData->ch1Average <<", " 
+					<< "ch1 value:" << pEmgData->ch1Value <<", "
+					<< "ch1 power:" << pEmgData->ch1Power <<", "
+					<< "ch1 strength:" << pEmgData->ch1Strength <<", "
+					<< "ch2 average:" << pEmgData->ch2Average <<", "
+					<< "ch2 value:" << pEmgData->ch2Value <<", "
+					<< "ch2 power:" << pEmgData->ch2Power<<", "
+					<< "ch2 strength:" << pEmgData->ch2Strength << std::endl;
+		delete pEmgData;
 	}
-	emgData* pEmgData = static_cast<emgData*>(pData);
-	std::cout   << "ch1 average:" <<  pEmgData->ch1Average <<", " 
-				<< "ch1 value:" << pEmgData->ch1Value <<", "
-				<< "ch1 power:" << pEmgData->ch1Power <<", "
-				<< "ch1 strength:" << pEmgData->ch1Strength <<", "
-				<< "ch2 average:" << pEmgData->ch2Average <<", "
-				<< "ch2 value:" << pEmgData->ch2Value <<", "
-				<< "ch2 power:" << pEmgData->ch2Power<<", "
-				<< "ch2 strength:" << pEmgData->ch2Strength << std::endl;
-	delete pEmgData;
-}
 
 };
 

@@ -3,6 +3,8 @@ Bioelectricity connector
 
 # Dependency
 * [uWebsocket](https://github.com/uNetworking/uWebSockets)
+    * `git submodule init`
+    * `git submodule update`
 
 
 # Time consumption
