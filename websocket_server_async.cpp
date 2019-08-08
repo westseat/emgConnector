@@ -13,28 +13,8 @@
 //
 //------------------------------------------------------------------------------
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/asio/bind_executor.hpp>
-#include <boost/asio/strand.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <algorithm>
-#include <cstdlib>
-#include <functional>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
-#include <iostream>
-#include <string>
-#include <mutex>
-#include <atomic>
-#include <algorithm>
 
-using tcp = boost::asio::ip::tcp;               // from <boost/asio/ip/tcp.hpp>
-namespace websocket = boost::beast::websocket;  // from <boost/beast/websocket.hpp>
-
+#include "websocket_server_async.h"
 //------------------------------------------------------------------------------
 
 // Report a failure
@@ -44,18 +24,10 @@ fail(boost::system::error_code ec, char const* what)
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
+
 // Echoes back all received WebSocket messages
-class session : public std::enable_shared_from_this<session>
-{
-    websocket::stream<tcp::socket> ws_;
-    boost::asio::strand<
-        boost::asio::io_context::executor_type> strand_;
-    boost::beast::multi_buffer buffer_;
-    std::atomic<int> mConnectStatus; 
-public:
     // Take ownership of the socket
-    explicit
-    session(tcp::socket socket)
+    session::session(tcp::socket socket)
         : ws_(std::move(socket))
         , strand_(ws_.get_executor())
     {
@@ -65,7 +37,7 @@ public:
 
     // Start the asynchronous operation
     void
-    run()
+    session::run()
     {
         // Accept the websocket handshake
         ws_.async_accept(
@@ -78,7 +50,7 @@ public:
     }
 
     void
-    on_accept(boost::system::error_code ec)
+    session::on_accept(boost::system::error_code ec)
     {
         if(ec){
             //mHandshake = false;
@@ -93,7 +65,7 @@ public:
     }
 
     void
-    do_read()
+    session::do_read()
     {
         // Read a message into our buffer
         ws_.async_read(
@@ -108,7 +80,7 @@ public:
     }
 
     void
-    do_write(std::shared_ptr<std::string> data) 
+    session::do_write(std::shared_ptr<std::string> data) 
     {
         if(mConnectStatus != 0) {
             return;
@@ -133,7 +105,7 @@ public:
     }
 
     void
-    on_read(
+    session::on_read(
         boost::system::error_code ec,
         std::size_t bytes_transferred)
     {
@@ -160,7 +132,7 @@ public:
     }
 
     void
-    on_write(
+    session::on_write(
         boost::system::error_code ec,
         std::size_t bytes_transferred)
     {
@@ -179,27 +151,20 @@ public:
     }
 
     bool
-    sessionValid()
+    session::sessionValid()
     {
         if(mConnectStatus == 1 || mConnectStatus == 2)
             return false;
         return true;
     }
-};
 
 
-class sessionManager 
-{
-public:
-    static sessionManager& getInstance() {
+    sessionManager& sessionManager::getInstance() {
         static sessionManager mSessionManager;
         return mSessionManager;
     }
-private:
 
-    sessionManager(){}
-public:
-    void pushSession(std::shared_ptr<session> pSession) {
+    void sessionManager::pushSession(std::shared_ptr<session> pSession) {
        // mSession.erase(std::remove_if(mSession.begin(), mSession.end(), [](std::shared_ptr<session>& it){
        //     return !(it->sessionValid());
        // }));
@@ -207,7 +172,7 @@ public:
         std::cout <<"session length: " << mSession.size() << std::endl;
     }
 
-    void notify(std::shared_ptr<std::string> data) {
+    void sessionManager::notify(std::shared_ptr<std::string> data) {
         //std::cout << "call notify" << std::endl;
         for(auto it : mSession) {
             it->do_write(data);
@@ -215,19 +180,9 @@ public:
         //std::cout<<"notify end" <<std::endl;
     }
 
-private:
-    std::vector<std::shared_ptr<session>> mSession;
-};
 //------------------------------------------------------------------------------
 
-// Accepts incoming connections and launches the sessions
-class listener : public std::enable_shared_from_this<listener>
-{
-    tcp::acceptor acceptor_;
-    tcp::socket socket_;
-
-public:
-    listener(
+    listener::listener(
         boost::asio::io_context& ioc,
         tcp::endpoint endpoint)
         : acceptor_(ioc)
@@ -271,7 +226,7 @@ public:
 
     // Start accepting incoming connections
     void
-    run()
+    listener::run()
     {
         if(! acceptor_.is_open())
             return;
@@ -279,7 +234,7 @@ public:
     }
 
     void
-    do_accept()
+    listener::do_accept()
     {
         acceptor_.async_accept(
             socket_,
@@ -290,7 +245,7 @@ public:
     }
 
     void
-    on_accept(boost::system::error_code ec)
+    listener::on_accept(boost::system::error_code ec)
     {
         if(ec)
         {
@@ -307,47 +262,46 @@ public:
         // Accept another connection
         do_accept();
     }
-};
 
 //------------------------------------------------------------------------------
 
-int main(int argc, char* argv[])
-{
-    // Check command line arguments.
-    if (argc != 4)
-    {
-        std::cerr <<
-            "Usage: websocket-server-async <address> <port> <threads>\n" <<
-            "Example:\n" <<
-            "    websocket-server-async 0.0.0.0 8080 1\n";
-        return EXIT_FAILURE;
-    }
-    auto const address = boost::asio::ip::make_address(argv[1]);
-    auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
-    auto const threads = std::max<int>(1, std::atoi(argv[3]));
-
-    // The io_context is required for all I/O
-    boost::asio::io_context ioc{threads};
-
-    // Create and launch a listening port
-    std::make_shared<listener>(ioc, tcp::endpoint{address, port})->run();
-
-    auto iocThread = std::thread([&ioc](){
-        ioc.run();
-    });
-    // Run the I/O service on the requested number of threads
-//    std::vector<std::thread> v;
-//    v.reserve(threads - 1);
-//    for(auto i = threads - 1; i > 0; --i)
-//        v.emplace_back(
-//        [&ioc]
-//        {
-//            ioc.run();
-//        });
-//    ioc.run();
-    while(true) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        sessionManager::getInstance().notify(std::make_shared<std::string>("Hello seat"));
-    }
-    return EXIT_SUCCESS;
-}
+//int main(int argc, char* argv[])
+//{
+//    // Check command line arguments.
+//    if (argc != 4)
+//    {
+//        std::cerr <<
+//            "Usage: websocket-server-async <address> <port> <threads>\n" <<
+//            "Example:\n" <<
+//            "    websocket-server-async 0.0.0.0 8080 1\n";
+//        return EXIT_FAILURE;
+//    }
+//    auto const address = boost::asio::ip::make_address(argv[1]);
+//    auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
+//    auto const threads = std::max<int>(1, std::atoi(argv[3]));
+//
+//    // The io_context is required for all I/O
+//    boost::asio::io_context ioc{threads};
+//
+//    // Create and launch a listening port
+//    std::make_shared<listener>(ioc, tcp::endpoint{address, port})->run();
+//
+//    auto iocThread = std::thread([&ioc](){
+//        ioc.run();
+//    });
+//    // Run the I/O service on the requested number of threads
+////    std::vector<std::thread> v;
+////    v.reserve(threads - 1);
+////    for(auto i = threads - 1; i > 0; --i)
+////        v.emplace_back(
+////        [&ioc]
+////        {
+////            ioc.run();
+////        });
+////    ioc.run();
+//    while(true) {
+//        std::this_thread::sleep_for(std::chrono::seconds(1));
+//        sessionManager::getInstance().notify(std::make_shared<std::string>("Hello seat"));
+//    }
+//    return EXIT_SUCCESS;
+//}
