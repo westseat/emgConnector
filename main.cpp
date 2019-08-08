@@ -13,6 +13,7 @@
 #include "serialPortChannel.h"
 #include "parserManager.h"
 #include "hardwareChannelManager.h"
+#include "websocket_server_async.h"
 
 class emgDataListener : public parserListener {
 
@@ -149,8 +150,16 @@ ssize_t safe_reads(int fd, void *vptr, size_t count)
 	return (count - nleft);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+//        if (argc != 4)
+//        {
+//            std::cerr <<
+//                "Usage: websocket-server-async <address> <port> <threads>\n" <<
+//                "Example:\n" <<
+//                "    websocket-server-async 0.0.0.0 8080 1\n";
+//            return EXIT_FAILURE;
+//        }
 	//serialPortChannel serial;
 	auto serialChannel = hardwareChannelManager::createHardwareChannel(hardwareChannelType::EMG_UART);
 	auto listen = std::make_shared<emgListener>();
@@ -162,6 +171,27 @@ int main()
 	serialChannel->open(path);
 	//serial.run();
 	serialChannel->run();
+
+//        auto const address = boost::asio::ip::make_address(argv[1]);
+//        auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
+//        auto const threads = std::max<int>(1, std::atoi(argv[3]));
+//    
+//        // The io_context is required for all I/O
+//        boost::asio::io_context ioc{threads};
+//    
+//        // Create and launch a listening port
+//        std::make_shared<listener>(ioc, tcp::endpoint{address, port})->run();
+//    
+//        auto iocThread = std::thread([&ioc](){
+//            ioc.run();
+//        });
+////        while(true) {
+////            std::this_thread::sleep_for(std::chrono::seconds(1));
+////            sessionManager::getInstance().notify(std::make_shared<std::string>("Hello seat"));
+////        }
+////      return EXIT_SUCCESS;
+
+
 	while (true) {
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 	}
