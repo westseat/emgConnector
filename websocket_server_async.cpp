@@ -58,6 +58,7 @@ fail(boost::system::error_code ec, char const* what)
             return fail(ec, "accept");
         }
         mConnectStatus = 0; // valid status;
+        ws_.text(true);
         //mHandshake = true;
         //mConnection = true;
         // Read a message
@@ -85,15 +86,14 @@ fail(boost::system::error_code ec, char const* what)
         if(mConnectStatus != 0) {
             return;
         }
-        ws_.text(true);
         //boost::beast::multi_buffer b;
         //boost::beast::ostream(b) << (*data);
         //std::cout <<"start to write" << std::endl;
         auto b = boost::asio::buffer(*data);
         ws_.async_write(
-            //buffer_.data(),
+            buffer_.data(),
             //b.data(),
-            boost::asio::buffer((*data)),
+           // boost::asio::buffer((*data)),
             boost::asio::bind_executor(
                 strand_,
                 std::bind(
