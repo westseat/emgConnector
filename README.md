@@ -1,12 +1,15 @@
-# bioC_onnector
-Bioelectricity connector
+# emgConnector 
 
-# Dependency
+EMG connector between EMG sensor and EMG client.
+
+Currently, the EMG client is used to dispaly waves of emg.
+
+## Dependency
 
 * boost::asio::beast
 * boost::property_tree
 
-# Build
+## Build
 
 * install boost v1.68
 
@@ -16,8 +19,14 @@ $ sudo apt-get update
 ```
 * run `build.sh`
 
+## TODO
 
-# Time consumption
+| list    |  status  |
+|---------|-----------|
+| port the emgConnector from `c++` to `python` | new |
+
+
+## Time consumption
 
 | date    | time     | duration |
 |----------|---------|----------|
