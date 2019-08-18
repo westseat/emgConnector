@@ -12,7 +12,7 @@ namespace util {
         tree.put("type", "emg");
         tree.put("ch1Average", data.ch1Average);
         tree.put("ch1Value", data.ch1Value);
-        tree.put("ch1Powser", data.ch1Power);
+        tree.put("ch1Power", data.ch1Power);
         tree.put("ch1Strength", data.ch1Strength);
         tree.put("ch2Average",data.ch2Average);
         tree.put("ch2Value", data.ch2Value);
