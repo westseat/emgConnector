@@ -13,6 +13,8 @@ $ pip3 install -r requirements.txt
 
 ## Run
 
+Since the script need to access the USB interface, please run the script in the `root` user.
+
 ```sh
 $ python3 emgServer.py
 ```
